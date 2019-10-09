@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+autopep8 = "*"
+pylint = "*"
+pyinstaller = "*"
+mypy = "*"
+
+[packages]
+flask = "*"
+
+[requires]
+python_version = "3.7"
+
+[scripts]
+rm_build = 'rd build /s /q >NUL 2>&1'
+build = 'pipenv run rm_build & pyinstaller src\\app.py --onefile && pipenv run rm_build'
+spec = 'pipenv run rm_build & pyinstaller app.spec && pipenv run rm_build'
+exe = 'dist\\app.exe'
