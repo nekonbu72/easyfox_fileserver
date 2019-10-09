@@ -18,7 +18,7 @@
       "request": "launch",
       "module": "flask",
       "env": {
-        "FLASK_APP": "src/hello.py"
+        "FLASK_APP": "src/app.py"
       },
       "args": ["run", "--no-debugger", "--no-reload"],
       "jinja": true

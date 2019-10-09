@@ -1,14 +1,14 @@
 from flask import Flask, request, make_response
-from directory import directory_tree_byJSON, directory_tree
+from directory import directory_tree_JSON
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
+ROOT = "C:\\easyfox_test"
 
-@app.route('/dirtree', methods=["POST"])
+
+@app.route('/dirtree')
 def dirtree():
-    body = request.get_data()
-    root = body.decode('utf-8')
-    resp = make_response(directory_tree_byJSON(root))
+    resp = make_response(directory_tree_JSON(ROOT))
     resp.headers['Content-Type'] = 'application/json'
     return resp
 
