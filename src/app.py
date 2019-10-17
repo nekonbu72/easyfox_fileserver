@@ -8,6 +8,7 @@ app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
 ROOT = "C:\\easyfox_test"
+ALLOWED_SUFFIXES = [".txt", ".js", ".iim"]
 
 
 @app.route('/dirtree')
@@ -30,23 +31,34 @@ def textfile(relative):
     if not full_path.exists():
         abort(404, "File Not Found")
 
+    if not full_path.suffix in ALLOWED_SUFFIXES:
+        abort(415, "File Not Text")
+
     if request.method == 'GET':
         with open(str(full_path)) as f:
             try:
                 read_data = f.read()
-            except(UnicodeDecodeError):
+            except:
                 abort(415, "File Not Readable")
 
-        return str(read_data)
+        # return str(read_data)
+
+        resp = make_response(str(read_data))
+        resp.headers['Content-Type'] = 'text/plain'
+        return resp
 
     elif request.method == 'POST':
         with open(str(full_path), "w") as f:
-            # try:
-            l = f.write(request.get_data(as_text=True))
-            # except():
-            #     abort(415, "File Not Readable")
+            try:
+                length = f.write(request.get_data(as_text=True))
+            except:
+                abort(415, "File Not Writable")
 
-        return str(l)
+        # return str(length)
+
+        resp = make_response(str(length))
+        resp.headers['Content-Type'] = 'text/plain'
+        return resp
 
 
 if __name__ == "__main__":
