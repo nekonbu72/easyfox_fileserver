@@ -1,14 +1,14 @@
 GET http://127.0.0.1:5000/dirtree HTTP/1.1
 
 ###
-GET http://127.0.0.1:5000/textfile/dir/dir2/dir3/test4.txt HTTP/1.1
+GET http://127.0.0.1:5000/file/dir/dir2/dir3/test4.txt HTTP/1.1
 
 ###
-POST http://127.0.0.1:5000/textfile/test.txt HTTP/1.1
+POST http://127.0.0.1:5000/file/test.txt HTTP/1.1
 
 written by Python
 
 ###
-POST http://127.0.0.1:5000/textfile/test1.xlsx HTTP/1.1
+POST http://127.0.0.1:5000/file/test1.xlsx HTTP/1.1
 
 written by Python

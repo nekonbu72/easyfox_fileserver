@@ -1,28 +1,39 @@
 import os
 import pathlib
-from flask import Flask, make_response, request, abort
+
+from flask import Flask, abort, make_response, request
+from flask_cors import CORS
 
 from directory import DirTree
 
 app = Flask(__name__)
+CORS(app)
 app.config['JSON_AS_ASCII'] = False
 
 ROOT = "C:\\easyfox_test"
 ALLOWED_SUFFIXES = [".txt", ".js", ".iim"]
+LIMIT_DEPTH = 3
 
 
 @app.route('/dirtree')
 def dirtree():
-    dir_tree = DirTree(ROOT)
+    dir_tree = DirTree(ROOT,
+                       suffixes=ALLOWED_SUFFIXES,
+                       limit_depth=3)
+
     if not dir_tree.exists:
         abort(404, "Root Not Found")
+
+    if not dir_tree.is_allowed_suffix:
+        abort(415, "Root Suffix Not Allowed")
+
     resp = make_response(dir_tree.to_JSON())
     resp.headers['Content-Type'] = 'application/json'
     return resp
 
 
-@app.route('/textfile/<path:relative>', methods=['GET', 'POST'])
-def textfile(relative):
+@app.route('/file/<path:relative>', methods=['GET', 'POST'])
+def file(relative):
     root_path = pathlib.Path(ROOT)
     if not root_path.exists():
         abort(404, "Root Not Found")
@@ -32,7 +43,7 @@ def textfile(relative):
         abort(404, "File Not Found")
 
     if not full_path.suffix in ALLOWED_SUFFIXES:
-        abort(415, "File Not Text")
+        abort(415, "File Suffix Not Allowed")
 
     if request.method == 'GET':
         with open(str(full_path)) as f:
