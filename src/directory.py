@@ -34,6 +34,10 @@ class DirTree:
         else:
             self.top = top
         next_depth = self.depth + 1
+
+        # self.relative = str(Path(self.top).relative_to(root_p))
+        self.relative = str(root_p.relative_to(self.top))
+
         children = []
         if next_depth <= limit_depth and root_p.is_dir():
             for child in root_p.iterdir():
