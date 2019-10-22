@@ -1,10 +1,10 @@
-# -*- mode: python -*-
+# -*- mode: python ; coding: utf-8 -*-
 
 block_cipher = None
 
 
-a = Analysis(['src\\hello.py'],
-             pathex=['c:\\Users\\s150209\\developer\\python\\flask_sample'],
+a = Analysis(['src\\app.py'],
+             pathex=['C:\\Users\\Tomoyuki Nakamura\\developer\\python\\easyfox_fileserver'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -23,10 +23,11 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='hello',
+          name='app',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
+          upx_exclude=[],
           runtime_tmpdir=None,
           console=True )
