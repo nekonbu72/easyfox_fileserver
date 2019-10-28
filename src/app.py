@@ -19,7 +19,7 @@ LIMIT_DEPTH = 3
 def dirtree():
     dir_tree = DirTree(ROOT,
                        suffixes=ALLOWED_SUFFIXES,
-                       limit_depth=3)
+                       limit_depth=LIMIT_DEPTH)
 
     if not dir_tree.exists:
         abort(404, "Root Not Found")
@@ -33,7 +33,43 @@ def dirtree():
 
 
 @app.route('/file/<path:relative>', methods=['GET', 'POST'])
-def file(relative):
+def file(relative: str):
+    full_path = __valid_full_path(relative)
+
+    if request.method == 'GET':
+        with open(full_path) as f:
+            try:
+                read_data = f.read()
+            except:
+                abort(415, "File Not Readable")
+
+        resp = make_response(str(read_data))
+        resp.headers['Content-Type'] = 'text/plain'
+        return resp
+
+    elif request.method == 'POST':
+        with open(full_path, "w") as f:
+            try:
+                length = f.write(request.get_data(as_text=True))
+            except:
+                abort(415, "File Not Writable")
+
+        resp = make_response(str(length))
+        resp.headers['Content-Type'] = 'text/plain'
+        return resp
+
+
+@app.route('/save/<path:relative>', methods=['POST'])
+def save(relative: str):
+    pass
+
+
+@app.route('/exe', methods=['POST'])
+def execute():
+    pass
+
+
+def __valid_full_path(relative: str) -> str:
     root_path = pathlib.Path(ROOT)
     if not root_path.exists():
         abort(404, "Root Not Found")
@@ -45,31 +81,7 @@ def file(relative):
     if not full_path.suffix in ALLOWED_SUFFIXES:
         abort(415, "File Suffix Not Allowed")
 
-    if request.method == 'GET':
-        with open(str(full_path)) as f:
-            try:
-                read_data = f.read()
-            except:
-                abort(415, "File Not Readable")
-
-        # return str(read_data)
-
-        resp = make_response(str(read_data))
-        resp.headers['Content-Type'] = 'text/plain'
-        return resp
-
-    elif request.method == 'POST':
-        with open(str(full_path), "w") as f:
-            try:
-                length = f.write(request.get_data(as_text=True))
-            except:
-                abort(415, "File Not Writable")
-
-        # return str(length)
-
-        resp = make_response(str(length))
-        resp.headers['Content-Type'] = 'text/plain'
-        return resp
+    return str(full_path)
 
 
 if __name__ == "__main__":
