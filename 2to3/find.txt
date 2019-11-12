@@ -1,0 +1,24 @@
+marionette_driver\marionette.py:
+680:data = data.decode('utf-8')  # nekonbu72 +
+1661:def execute_js_script(self, script, script_args=(), async_=True, # async=True, # nekonbu72 +-
+1668:# "async": async, # nekonbu72 -
+1669:"async": async_, # nekonbu72 +
+
+marionette_driver\transport.py:
+179:chunk = chunk.decode('utf-8')  # nekonbu72 +
+260:payload[totalsent:].encode('utf-8'))  # nekonbu72 +
+
+mozprocess\processhandler.py:
+1113:(line + '\n'.encode('utf8')).decode('utf8'))  # nekonbu72 +
+
+mozprocess\geckoinstance.py:
+202:profile_args["ignore"] = lambda src, names: "parent.lock"  # nekonbu72 +
+
+mozprocess\winprocess.py:
+167:try:  # nekonbu72 +
+168:except:  # nekonbu72 +
+169:self._as_parameter_ = LPCWSTR(None)  # nekonbu72 +
+
+six.py:
+708:except AttributeError:  # nekonbu72 +
+709:raise tp(value).with_traceback(tb)  # nekonbu72 +

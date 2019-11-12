@@ -5,6 +5,9 @@ from flask import Flask, abort, make_response, request
 from flask_cors import CORS
 
 from directory import DirTree
+from puppeteer.download import setup_download_folder
+from puppeteer.puppet import Puppet
+from puppeteer.userprofile import profile_dir
 
 app = Flask(__name__)
 CORS(app)
@@ -13,6 +16,7 @@ app.config['JSON_AS_ASCII'] = False
 ROOT = "C:\\easyfox_test"
 ALLOWED_SUFFIXES = [".txt", ".js", ".iim"]
 LIMIT_DEPTH = 3
+BINARY = "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
 
 
 @app.route('/dirtree')
@@ -66,7 +70,25 @@ def save(relative: str):
 
 @app.route('/exe', methods=['POST'])
 def execute():
-    pass
+    script = request.get_data(as_text=True)
+    if script == "":
+        abort(400, "Empty Script")
+
+    profile = profile_dir()
+    if profile is None:
+        abort(500, "Firefox Default Profile Not Found")
+
+    puppet = Puppet(BINARY, profile)
+    if not puppet.has_session:
+        abort(500, "Marionette Session Not Started")
+
+    err = puppet.exec(script)
+    if not err is None:
+        abort(500, f"Invalid Script: {err}")
+
+    resp = make_response("The execution was succeeded.")
+    resp.headers['Content-Type'] = 'text/plain'
+    return resp
 
 
 def __valid_full_path(relative: str) -> str:
