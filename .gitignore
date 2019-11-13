@@ -1,8 +1,0 @@
-.mypy_cache
-.venv
-build
-dist
-src/**/__pycache__
-gecko.log
-downloads
-_ref/~$*
