@@ -13,8 +13,9 @@ app = Flask(__name__)
 CORS(app)
 app.config['JSON_AS_ASCII'] = False
 
-ROOT = "C:\\easyfox_test"
-ALLOWED_SUFFIXES = [".txt", ".js", ".iim"]
+# ROOT = "C:\\easyfox_test"
+ROOT = "src\\puppeteer\\scripts"
+ALLOWED_SUFFIXES = [".py"]
 LIMIT_DEPTH = 3
 BINARY = "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
 
