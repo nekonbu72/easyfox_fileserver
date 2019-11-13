@@ -194,3 +194,4 @@ class Puppet:
                 f.unlink()
             elif f.is_dir():
                 self.__forced_rmdir(f)
+        p.rmdir()
