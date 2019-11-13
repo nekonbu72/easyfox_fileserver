@@ -26,9 +26,20 @@ def main():
         puppet.quit()
         return
 
-    res = puppet.exec(script)
-    if not res is None:
-        print("error occurred in script: ", res)
+    err = puppet.exec(script)
+    if not err is None:
+        print("error occurred in script: ", err)
+
+    # DOWNLOAD_TEST = "http://xcal1.vodafone.co.uk/"
+    # DOWNLOAD_DIR = "download"
+
+    # puppet.marionette.navigate(DOWNLOAD_TEST)
+    # puppet.wait(5)
+    # puppet.set_download(DOWNLOAD_DIR)
+    # tgt = puppet.query_selector(
+    #     "body > table > tbody > tr:nth-child(16) > td:nth-child(1) > a")
+    # tgt.click()
+    # puppet.wait(15)
 
     if puppet.has_session:
         puppet.quit()
@@ -36,6 +47,3 @@ def main():
 
 
 main()
-
-if __name__ == "__main__":
-    pass

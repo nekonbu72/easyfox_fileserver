@@ -1,12 +1,12 @@
-import getpass
-import pathlib
+from getpass import getuser
+from pathlib import Path
 from typing import Optional
 
 
 def profile_dir() -> Optional[str]:
-    user = getpass.getuser()
+    user = getuser()
     profiles_dir = f"C:\\Users\\{user}\\AppData\\Roaming\\Mozilla\\Firefox\\Profiles\\"
-    p = pathlib.Path(profiles_dir)
+    p = Path(profiles_dir)
     if p.is_dir():
         for profile in p.iterdir():
             if profile.is_dir():

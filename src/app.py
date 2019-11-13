@@ -1,5 +1,5 @@
-import os
 import pathlib
+from os import getcwd, chdir
 
 from flask import Flask, abort, make_response, request
 from flask_cors import CORS
@@ -15,6 +15,7 @@ app.config['JSON_AS_ASCII'] = False
 
 # ROOT = "C:\\easyfox_test"
 ROOT = "src\\puppeteer\\scripts"
+# chdir(ROOT)
 ALLOWED_SUFFIXES = [".py"]
 LIMIT_DEPTH = 3
 BINARY = "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
@@ -64,8 +65,8 @@ def file(relative: str):
         return resp
 
 
-@app.route('/save/<path:relative>', methods=['POST'])
-def save(relative: str):
+@app.route('/newfile/<path:relative>', methods=['POST'])
+def newfile(relative: str):
     pass
 
 
@@ -83,9 +84,18 @@ def execute():
     if not puppet.has_session:
         abort(500, "Marionette Session Not Started")
 
+    cwd = getcwd()
+    chdir(ROOT)
     err = puppet.exec(script)
+    chdir(cwd)
+
     if not err is None:
+        if puppet.has_session:
+            puppet.quit()
         abort(500, f"Invalid Script: {err}")
+
+    if puppet.has_session:
+        puppet.quit()
 
     resp = make_response("The execution was succeeded.")
     resp.headers['Content-Type'] = 'text/plain'

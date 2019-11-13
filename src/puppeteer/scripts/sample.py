@@ -12,6 +12,6 @@ tgt = query_selector(
 
 tgt.click()
 
-wait(15)
+wait(10)
 
 # quit()
