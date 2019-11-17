@@ -1,5 +1,6 @@
-import pathlib
-from os import getcwd, chdir
+from os import chdir, getcwd
+from pathlib import Path
+from typing import Optional
 
 from flask import Flask, abort, make_response, request
 from flask_cors import CORS
@@ -13,9 +14,14 @@ app = Flask(__name__)
 CORS(app)
 app.config['JSON_AS_ASCII'] = False
 
-# ROOT = "C:\\easyfox_test"
-ROOT = "src\\puppeteer\\scripts"
-# chdir(ROOT)
+ROOT = "src\\puppeteer\\scripts\\"
+root = Path(ROOT)
+if not root.exists():
+    abort(404, "Root Not Found")
+
+if not root.is_dir():
+    abort(404, "Root Not Directory")
+
 ALLOWED_SUFFIXES = [".py"]
 LIMIT_DEPTH = 3
 BINARY = "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
@@ -27,9 +33,6 @@ def dirtree():
                        suffixes=ALLOWED_SUFFIXES,
                        limit_depth=LIMIT_DEPTH)
 
-    if not dir_tree.exists:
-        abort(404, "Root Not Found")
-
     if not dir_tree.is_allowed_suffix:
         abort(415, "Root Suffix Not Allowed")
 
@@ -38,12 +41,17 @@ def dirtree():
     return resp
 
 
-@app.route('/file/<path:relative>', methods=['GET', 'POST'])
+@app.route('/file/<path:relative>', methods=['GET', 'PUT', 'DELETE'])
 def file(relative: str):
-    full_path = __valid_full_path(relative)
+    path_from_root = root.joinpath(relative)
+    if not path_from_root.suffix in ALLOWED_SUFFIXES:
+        abort(415, "File Suffix Not Allowed")
 
     if request.method == 'GET':
-        with open(full_path) as f:
+        if not path_from_root.is_file():
+            abort(404, "File Not Found")
+
+        with open(str(path_from_root)) as f:
             try:
                 read_data = f.read()
             except:
@@ -53,8 +61,23 @@ def file(relative: str):
         resp.headers['Content-Type'] = 'text/plain'
         return resp
 
-    elif request.method == 'POST':
-        with open(full_path, "w") as f:
+    elif request.method == 'DELETE':
+        if not path_from_root.is_file():
+            abort(404, "File Not Found")
+
+        path_from_root.unlink()
+        resp = make_response("ok")
+        resp.headers['Content-Type'] = 'text/plain'
+        return resp
+
+    elif request.method == 'PUT':
+        if not path_from_root.is_file():
+            try:
+                path_from_root.touch(exist_ok=False)
+            except FileExistsError:
+                abort(500, "File Exists Error")
+
+        with open(str(path_from_root), "w") as f:
             try:
                 length = f.write(request.get_data(as_text=True))
             except:
@@ -63,11 +86,6 @@ def file(relative: str):
         resp = make_response(str(length))
         resp.headers['Content-Type'] = 'text/plain'
         return resp
-
-
-@app.route('/newfile/<path:relative>', methods=['POST'])
-def newfile(relative: str):
-    pass
 
 
 @app.route('/exe', methods=['POST'])
@@ -100,21 +118,6 @@ def execute():
     resp = make_response("The execution was succeeded.")
     resp.headers['Content-Type'] = 'text/plain'
     return resp
-
-
-def __valid_full_path(relative: str) -> str:
-    root_path = pathlib.Path(ROOT)
-    if not root_path.exists():
-        abort(404, "Root Not Found")
-
-    full_path = root_path.joinpath(relative)
-    if not full_path.exists():
-        abort(404, "File Not Found")
-
-    if not full_path.suffix in ALLOWED_SUFFIXES:
-        abort(415, "File Suffix Not Allowed")
-
-    return str(full_path)
 
 
 if __name__ == "__main__":

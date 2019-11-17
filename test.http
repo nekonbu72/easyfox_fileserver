@@ -4,7 +4,7 @@ GET http://127.0.0.1:5000/dirtree HTTP/1.1
 GET http://127.0.0.1:5000/file/sample.py HTTP/1.1
 
 ###
-POST http://127.0.0.1:5000/file/sample/sample2.py HTTP/1.1
+PUT http://127.0.0.1:5000/file/sample/sample2.py HTTP/1.1
 
 print("written by Python")
 
@@ -12,9 +12,12 @@ print("written by Python")
 GET http://127.0.0.1:5000/file/sample/sample3.js HTTP/1.1
 
 ###
-POST http://127.0.0.1:5000/file/sample/sample3.js HTTP/1.1
+PUT http://127.0.0.1:5000/file/newfile.py HTTP/1.1
 
-console.log("written by Python");
+print("created by python")
+
+###
+DELETE  http://127.0.0.1:5000/file/newfile.py HTTP/1.1
 
 ###
 POST http://127.0.0.1:5000/exe HTTP/1.1

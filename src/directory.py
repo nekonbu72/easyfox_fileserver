@@ -13,6 +13,11 @@ class DirTree:
                  limit_depth: int = 99,
                  top: str = ""):
         root_p = Path(root)
+
+        self.__is_saved = True
+        self.__is_selected = False
+        self.__is_opened = False
+
         self.__exists = root_p.exists()
         self.__parent = str(root_p.parent)
         self.__name = root_p.name
@@ -32,8 +37,10 @@ class DirTree:
         self.__depth = depth
         if self.depth == 0:
             self.__top = self.full_path
+            self.__is_top = True
         else:
             self.__top = top
+            self.__is_top = False
         next_depth = self.depth + 1
 
         self.__relative = str(root_p.relative_to(self.top))
@@ -46,10 +53,24 @@ class DirTree:
                                         depth=next_depth,
                                         limit_depth=limit_depth,
                                         top=self.top))
+            if len(children) > 0:
+                children.sort(key=lambda child: child.is_file)
         self.__children = children
 
         self.__has_children = len(self.children) > 0
         self.__count_children = len(self.children)
+
+    @property
+    def is_saved(self):
+        return self.__is_saved
+
+    @property
+    def is_selected(self):
+        return self.__is_selected
+
+    @property
+    def is_opened(self):
+        return self.__is_opened
 
     @property
     def exists(self):
@@ -96,6 +117,10 @@ class DirTree:
         return self.__top
 
     @property
+    def is_top(self):
+        return self.__is_top
+
+    @property
     def relative(self):
         return self.__relative
 
@@ -121,6 +146,9 @@ class DirTree:
         for prop in _public_props(self):
             dic[prop] = getattr(self, prop)
         return dic
+
+    def __repr__(self):
+        return self.name
 
 
 class _DirTreeJSONEncoder(json.JSONEncoder):
@@ -160,10 +188,14 @@ def __encode_escape(str: str) -> str:
 
 
 def __encode_naming(str: str) -> str:
-    return str                                              \
-        .replace("full_path", "fullPath")                   \
-        .replace("is_dir", "isDir")                         \
-        .replace("has_children", "hasChildren")             \
-        .replace("is_file", "isFile")                       \
-        .replace("is_allowed_suffix", "isAllowedSuffix")    \
+    return str \
+        .replace("is_saved", "isSaved")                  \
+        .replace("is_selected", "isSelected")            \
+        .replace("is_opened", "isOpened")                \
+        .replace("full_path", "fullPath")                \
+        .replace("is_dir", "isDir")                      \
+        .replace("has_children", "hasChildren")          \
+        .replace("is_file", "isFile")                    \
+        .replace("is_allowed_suffix", "isAllowedSuffix") \
+        .replace("is_top", "isTop")                      \
         .replace("count_children", "countChildren")
